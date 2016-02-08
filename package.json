@@ -17,7 +17,8 @@
     "js-data-mongodb": "^0.5.1",
     "js-data-redis": "^2.3.0",
     "mongodb": "^2.1.6",
-    "redux": "^3.3.1"
+    "redux": "^3.3.1",
+    "redux-thunk": "^1.0.3"
   },
   "devDependencies": {
     "babel-cli": "^6.4.5",

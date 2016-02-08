@@ -16,7 +16,7 @@ var User = store.defineResource({
 
   // map this resource to a collection, default is Resource#name
 //  table: 'users'
-});
+})
 
 console.log("running");
 
