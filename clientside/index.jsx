@@ -1,40 +1,39 @@
 /* @flow */
 
 import "babel-polyfill"
-import { omit, map, curry } from "lodash";
+import { omit, map, curry, times } from "lodash";
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk';
 
-
 import React from 'react'
 import { render } from 'react-dom'
+import { Provider, connect } from 'react-redux'
 
-// import "bluebird";
+import Moment from 'moment';
+import 'bluebird';
+
+
+// STORE
 
 let userReducer = function (state = {}, action) {
-//    console.log('userReducer was called with state', state, 'and action', action)
-        switch (action.type) {
-            case 'LOGIN':
-                return action.user
-            default:
-                return state;
-        }
+    switch (action.type) {
+        case 'LOGIN':
+            return action.user
+        default:
+            return state;
     }
-
-
-let calReducer = function (state = {}, action) {
-//    console.log('calReducer was called with state', state, 'and action', action)
-        switch (action.type) {
-            case 'DATE':
-                return { date: action.date }
-            default:
-                return { date: new Date() }
-        }
 }
 
+let calReducer = function (state = {}, action) {
+    switch (action.type) {
+        case 'DATE':
+            return { date: action.date }
+        default:
+            return { date: new Moment() }
+    }
+}
 
 let eventReducer = function (state = [], action) {
-    //    console.log('calReducer was called with state', state, 'and action', action)
     switch (action.type) {
         case 'ADD':
             return [ ...state, action.item ]
@@ -42,7 +41,6 @@ let eventReducer = function (state = [], action) {
             return state;
     }
 }
-
 
 let logMiddleware = curry(({dispatch, getState }, next, action) => {
     console.log(`action "${action.type}"`, omit(action, 'type'));
@@ -58,6 +56,9 @@ const store = createStore(
     applyMiddleware(logMiddleware),
     applyMiddleware(thunk)
 );
+
+
+// ACTIONS
 
 const login = (user=false) => {
     return dispatch => {
@@ -79,7 +80,39 @@ const addEvent = ( event: ?Event ): ?Action => {
     return { type: 'ADD', item: event }
 }
 
-store.dispatch(login({ name: 'bla' }));
+
+// VIEWS
+
+const DayTitles = () => (
+    <div>
+    {['Sun','Mon','Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(n => (
+        <div key={n} className="dayTitle">
+            {n}
+        </div>
+    ))}
+    </div>
+);
+
+const Calendar = ({date}) => (    
+    <div className="cal">
+        <div className="monthTitle">
+            { date.format('MMMM') }
+        </div>
+        
+        <DayTitles />
+        {times(32, n => (
+             <div key={n} className="day">
+                 <div className="dayContent" >
+                     {n}
+                 </div>
+             </div>
+         ))
+        }
+    </div>
+);
+
+        
+//store.dispatch(login({ name: 'bla' }));
 
 store.dispatch(addEvent({title: "event1", start: 2, end: 5 }));
 store.dispatch(addEvent({ title: "event2", start: 12, end: 22 }));
@@ -91,3 +124,32 @@ store.subscribe(() => {
 });
 
 
+const mapStateToProps = (state) => {
+    return {
+        date: state.cal.date
+    }
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {}
+};
+
+const WrappedCal = connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Calendar);
+
+const App = () => (
+    <div>
+        <WrappedCal />
+    </div>
+);
+
+render(
+    <Provider store={store}>
+        <App />
+    </Provider>,
+    document.getElementById('root')
+)
+
+    

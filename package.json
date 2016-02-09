@@ -20,6 +20,7 @@
     "js-data-mongodb": "^0.5.1",
     "js-data-redis": "^2.3.0",
     "lodash": "^4.3.0",
+    "moment": "^2.11.2",
     "mongodb": "^2.1.6",
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
