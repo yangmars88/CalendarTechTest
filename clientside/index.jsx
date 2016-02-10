@@ -93,24 +93,37 @@ const DayTitles = () => (
     </div>
 );
 
-const Calendar = ({date}) => (    
-    <div className="cal">
-        <div className="monthTitle">
-            { date.format('MMMM') }
-        </div>
-        
-        <DayTitles />
-        {times(32, n => (
-             <div key={n} className="day">
-                 <div className="dayContent" >
-                     {n}
-                 </div>
-             </div>
-         ))
-        }
-    </div>
-);
+const Calendar = ({date}) => {
+    let year = date.year();
+    let day = date.startOf('year');
+    let days = []
+    
+    while (day.year() == year) {
+        days.push((
+            <div key={day.dayOfYear()} className={(day.month() % 2 == 1) ? 'day odd' : 'day even'}>
+                <div className="dayContent"  >
+                    {day.date()}
+                </div>
+            </div>));
 
+        day.add(1,'d');
+    }
+    
+    console.log(days)
+        
+    return (
+        <div className="cal">
+        <div className="monthTitle">
+        { date.format('YYYY') }
+        </div>
+        <DayTitles />
+        <div className="daysContainer">
+            {days}
+        </div>
+    
+    </div>
+    )
+}
         
 //store.dispatch(login({ name: 'bla' }));
 
