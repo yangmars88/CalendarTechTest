@@ -42,7 +42,7 @@ div {
 }
 body {
   font-family: helvetica;
-  padding: 3em;
+  padding: 1em;
   margin: 0;
   background: rgba(1, 1, 1, 0);
 }
@@ -108,12 +108,19 @@ body {
 .day.bleft {
   border-left: 1px solid black;
 }
+.day.today {
+  box-shadow: 0 0 1.5em rgba(167, 97, 178, 0.35);
+  background: rgba(167, 97, 178, 0.15);
+}
 .day:hover {
-  border: 1px solid black;
-  background: white;
+  border: 1px solid rgba(97, 178, 167, 0.7);
+  background: rgba(97, 178, 167, 0.15);
   transition: all 0.15s ease;
   box-shadow: 0 0.5em 1.5em rgba(1, 1, 1, 0.15);
   position: relative;
   top: -0.5em;
   z-index: 2;
+}
+.day:hover .dayContent {
+  font-size: 2em;
 }

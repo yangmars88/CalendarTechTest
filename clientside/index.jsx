@@ -97,7 +97,7 @@ const Calendar = ({date}) => {
     let year = date.year();
     let day = date.startOf('year');
     let momth = day.month()
-        
+    let today = new Moment().startOf('day')
     let days = []
     
     while (day.year() == year) {
@@ -109,6 +109,9 @@ const Calendar = ({date}) => {
             if ((day.date() == 1) && (day.weekday() != 5)) { classes.push('bleft') }
 
         }
+
+
+        if (today.isSame(day)) { classes.push('today') }
         
         days.push((
             <div key={day.dayOfYear()} className={classes.join(' ')}>
@@ -119,13 +122,13 @@ const Calendar = ({date}) => {
 
         day.add(1,'d');
     }
+
     
-    console.log(days)
         
     return (
         <div className="cal">
         <div className="monthTitle">
-        { date.format('YYYY') }
+        { year }
         </div>
         <DayTitles />
         <div className="daysContainer">

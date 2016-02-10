@@ -21,7 +21,7 @@ div { box-sizing: border-box; }
 
 body {
     font-family: helvetica;
-    padding: 3em;
+    padding: 1em;
     margin: 0;
     background: rgba(1,1,1,0);
 }
@@ -58,7 +58,8 @@ body {
 }
 
 @borderColor: lighten(gray,30%);
-
+@green: rgb(97, 178, 167);
+@blue: rgb(97, 167, 178);
 .daysContainer {
     border-top: 1px solid @borderColor;
     border-bottom: 1px solid @borderColor;
@@ -89,10 +90,12 @@ body {
 
 .day.odd {
 //    background: rgba(255,255,0, 0.05);
+//    background: lighten(@green,40%);
     background: rgba(0,0,0, 0.03);
 }
 
 .day.even {
+//    background: lighten(@blue,40%);
 //    background: rgba(0,255,255, 0.05);
 }
 
@@ -103,18 +106,26 @@ body {
 .day.bleft {
     border-left: 1px solid black;
 }
+.day.today {
+    box-shadow: 0 0 1.5em rgba(167, 97, 178, 0.35);
+
+    background: rgba(167, 97, 178, 0.15);
+}
 
 .day:hover {
     .dayContent {
+        font-size: 2em;
     }
-    border: 1px solid black;
-    background: white;
+    border: 1px solid rgba(97, 178, 167, 0.7);
+    background: rgba(97, 178, 167, 0.15);
+//    border: 1px solid black;
+//    background: white;
     transition: all 0.15s ease;
     box-shadow: 0 0.5em 1.5em rgba(1,1,1,0.15);
     position: relative;
     top: -0.5em;
     z-index: 2;
-//    border-radius: 5%;
+    //    border-radius: 5%;
 }
 
 
