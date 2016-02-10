@@ -1,5 +1,4 @@
 /* @flow */
-
 import "babel-polyfill"
 import { omit, map, curry, times } from "lodash";
 import { createStore, combineReducers, applyMiddleware } from 'redux'
@@ -10,7 +9,7 @@ import { render } from 'react-dom'
 import { Provider, connect } from 'react-redux'
 
 import Moment from 'moment';
-import 'bluebird';
+//import 'bluebird';
 
 
 // STORE
@@ -60,14 +59,18 @@ const store = createStore(
 
 // ACTIONS
 
-const login = (user=false) => {
-    return dispatch => {
-        setTimeout( () => {
-            dispatch({ type: 'LOGIN', user: user })
-        },1000)
-    }}
 
-type Action = { type: string }
+type Action = { type: string };
+type DelayedAction = ((dispatch: Function) => void);
+class noAction {};
+
+type SpecialAction = DelayedAction | Class<noAction> // check why this doesn't work in the same line
+type ActionResult = SpecialAction | Action;
+
+
+const login = ( user: boolean | Object ): ActionResult => {
+    return (dispatch) => { setTimeout( () => { dispatch({ type: 'LOGIN', user: user }) }, 1000) }
+}
 
 type Event = {
     start: number,
@@ -75,8 +78,8 @@ type Event = {
     title: ?string
 }
 
-const addEvent = ( event: ?Event ): ?Action => {
-    if (!event) { return }
+const addEvent = ( event: ?Event ): ActionResult => {
+    if (!event) { return noAction }
     return { type: 'ADD', item: event }
 }
 
@@ -128,7 +131,7 @@ const Calendar = ({date}) => {
     return (
         <div className="cal">
         <div className="monthTitle">
-        { year }
+            { year }
         </div>
         <DayTitles />
         <div className="daysContainer">
