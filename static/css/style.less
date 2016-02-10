@@ -59,6 +59,11 @@ body {
 
 @borderColor: lighten(gray,30%);
 
+.daysContainer {
+    border-top: 1px solid @borderColor;
+    border-bottom: 1px solid @borderColor;
+}
+
 .day {
     .col-1-7;
     .animMegaFast;
@@ -83,14 +88,27 @@ body {
 }
 
 .day.odd {
-    background: rgba(1,1,1,0.05);
+//    background: rgba(255,255,0, 0.05);
+    background: rgba(0,0,0, 0.03);
+}
+
+.day.even {
+//    background: rgba(0,255,255, 0.05);
+}
+
+.day.btop {
+    border-top: 1px solid black;
+}
+
+.day.bleft {
+    border-left: 1px solid black;
 }
 
 .day:hover {
     .dayContent {
     }
-    border-bottom: 1px solid @borderColor;
-    border-right: 1px solid @borderColor;
+    border: 1px solid black;
+    background: white;
     transition: all 0.15s ease;
     box-shadow: 0 0.5em 1.5em rgba(1,1,1,0.15);
     position: relative;

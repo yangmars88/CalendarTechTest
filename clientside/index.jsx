@@ -96,11 +96,22 @@ const DayTitles = () => (
 const Calendar = ({date}) => {
     let year = date.year();
     let day = date.startOf('year');
+    let momth = day.month()
+        
     let days = []
     
     while (day.year() == year) {
+        let classes = ['day']
+        classes.push((day.month() % 2 == 1) ? 'odd' : 'even');
+        
+        if (day.month() > 0 && day.date() < 8) {
+            classes.push('btop');
+            if ((day.date() == 1) && (day.weekday() != 5)) { classes.push('bleft') }
+
+        }
+        
         days.push((
-            <div key={day.dayOfYear()} className={(day.month() % 2 == 1) ? 'day odd' : 'day even'}>
+            <div key={day.dayOfYear()} className={classes.join(' ')}>
                 <div className="dayContent"  >
                     {day.date()}
                 </div>
