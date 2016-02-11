@@ -126,7 +126,7 @@ const Month = connect()(({ month }) => {
     
     while (day.month() == month.month()) {
         days.push(<Day key={day.dayOfYear()} day={ day.unix() } />);
-        if (day.date() < 7 && day.weekday() == 5) {
+        if (day.date() < 8 && day.weekday() == 5) {
             
             days.push (
                 <div className="monthName">
@@ -162,8 +162,9 @@ const Calendar = ({ date }) => {
             { year }
         </div>
         <DayTitles />
-
-        { months }
+        <div className="calContainer">
+            { months }
+        </div>
         
         </div>
     );
