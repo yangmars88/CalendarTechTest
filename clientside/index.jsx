@@ -1,4 +1,5 @@
 /* @flow */
+
 import "babel-polyfill"
 import { omit, map, curry, times } from "lodash";
 import { createStore, combineReducers, applyMiddleware } from 'redux'
@@ -63,88 +64,87 @@ const store = createStore(
 type Action = { type: string };
 type DelayedAction = ((dispatch: Function) => void);
 class noAction {};
-
-type SpecialAction = DelayedAction | Class<noAction> // check why this doesn't work in the same line
-type ActionResult = SpecialAction | Action;
-
+type ActionResult =  DelayedAction | Action | Class<noAction>
 
 const login = ( user: boolean | Object ): ActionResult => {
     return (dispatch) => { setTimeout( () => { dispatch({ type: 'LOGIN', user: user }) }, 1000) }
-}
+};
 
 type Event = {
     start: number,
     end: number,
     title: ?string
-}
+};
 
 const addEvent = ( event: ?Event ): ActionResult => {
     if (!event) { return noAction }
     return { type: 'ADD', item: event }
-}
+};
 
-
-// VIEWS
-
+/*  VIEWS  */
+    
 const DayTitles = () => (
     <div>
-    {['Sun','Mon','Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(n => (
-        <div key={n} className="dayTitle">
-            {n}
-        </div>
-    ))}
+        { Moment.weekdaysShort().map(n => (
+              <div key={n} className="dayTitle">
+                  {n}
+              </div>
+          ))}
     </div>
 );
 
-const Calendar = ({date}) => {
+const Day = connect()(({ day }) => {
+    day = new Moment.unix(day)
+            
+    let classes = [ 'day' ];
+    let today = new Moment().startOf('day');
+    
+    classes.push((day.month() % 2 == 1) ? 'odd' : 'even');
+    
+    if (day.month() > 0 && day.date() < 8) {
+        classes.push('btop');
+        if ((day.date() == 1) && (day.weekday() != 5)) { classes.push('bleft') }
+    }
+    
+    if (today.isSame(day)) { classes.push('today') }
+
+    return (
+        <div className={classes.join(' ')}>
+            <div className="dayContent" >
+                { day.date() }
+            </div>
+        </div>)
+})
+
+const Calendar = ({ date }) => {
     let year = date.year();
+    
+    let days = [];
     let day = date.startOf('year');
-    let momth = day.month()
-    let today = new Moment().startOf('day')
-    let days = []
     
     while (day.year() == year) {
-        let classes = ['day']
-        classes.push((day.month() % 2 == 1) ? 'odd' : 'even');
-        
-        if (day.month() > 0 && day.date() < 8) {
-            classes.push('btop');
-            if ((day.date() == 1) && (day.weekday() != 5)) { classes.push('bleft') }
-
-        }
-
-
-        if (today.isSame(day)) { classes.push('today') }
-        
-        days.push((
-            <div key={day.dayOfYear()} className={classes.join(' ')}>
-                <div className="dayContent"  >
-                    {day.date()}
-                </div>
-            </div>));
-
+        days.push(<Day key={day.dayOfYear()} day={ day.unix() } />);
         day.add(1,'d');
-    }
+    };
 
     
-        
     return (
         <div className="cal">
         <div className="monthTitle">
             { year }
         </div>
         <DayTitles />
-        <div className="daysContainer">
-            {days}
-        </div>
-    
-    </div>
-    )
-}
         
-//store.dispatch(login({ name: 'bla' }));
+        <div className="daysContainer">
+            { days }
+        </div>
+        
+        </div>
+    );
+};
+        
 
-store.dispatch(addEvent({title: "event1", start: 2, end: 5 }));
+store.dispatch(addEvent({ title: "event1", start: 2, end: 5 }));
 store.dispatch(addEvent({ title: "event2", start: 12, end: 22 }));
 
 console.log('store_0 state after initialization:', store.getState());
@@ -165,8 +165,8 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const WrappedCal = connect(
-    mapStateToProps,
-    mapDispatchToProps
+    ((state) => { return { date: state.cal.date}}),
+    (() => { return {} })
 )(Calendar);
 
 const App = () => (
