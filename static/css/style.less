@@ -90,12 +90,6 @@ body {
     }    
 }
 
-.day.odd {
-//    background: rgba(255,255,0, 0.05);
-//    background: lighten(@green,40%);
-    background: rgba(0,0,0, 0.03);
-}
-
 .day.even {
 //    background: lighten(@blue,40%);
 //    background: rgba(0,255,255, 0.05);
@@ -134,10 +128,9 @@ body {
     pointer-events: none;
     opacity: 0.1;
     font-weight: bold;
-    float:left;
     position: relative;
+    float: left;
     left: -1.5em;
-    border: 1px solid red;
     z-index: 0;
     font-size: 7.5em;
     border: 1px solid red;
@@ -149,6 +142,17 @@ body {
     .content {
     }
 }
+
+.month {
+    position: relative;
+}
+
+.month.odd {
+    .day {
+        background: rgba(0,0,0, 0.03);
+    }
+}
+
 
 /*
 .monthName.odd {

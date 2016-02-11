@@ -100,9 +100,6 @@ body {
   position: absolute;
   z-index: 2;
 }
-.day.odd {
-  background: rgba(0, 0, 0, 0.03);
-}
 .day.btop {
   border-top: 1px solid black;
 }
@@ -127,8 +124,8 @@ body {
   pointer-events: none;
   opacity: 0.1;
   font-weight: bold;
-  float: left;
   position: relative;
+  float: left;
   left: -1.5em;
   z-index: 0;
   font-size: 7.5em;
@@ -138,6 +135,12 @@ body {
   border: 0px;
   padding: 0;
   margin: 0;
+}
+.month {
+  position: relative;
+}
+.month.odd .day {
+  background: rgba(0, 0, 0, 0.03);
 }
 /*
 .monthName.odd {

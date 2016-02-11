@@ -99,7 +99,6 @@ const Day = connect()(({ day }) => {
     let classes = [ 'day' ];
     let today = new Moment().startOf('day');
     
-    classes.push((day.month() % 2 == 1) ? 'odd' : 'even');
     
     if (day.month() > 0 && day.date() < 8) {
         classes.push('btop');
@@ -114,30 +113,57 @@ const Day = connect()(({ day }) => {
                 { day.date() }
             </div>
         </div>)
-})
+});
 
-const Calendar = ({ date }) => {
-    let year = date.year();
-    
+const Month = connect()(({ month }) => {
+    month = Moment.unix(month);
     let days = [];
-    let day = date.startOf('year');
+    let day = month.clone();
+
+    let classes = [ "month" ]
+    classes.push((month.month() % 2 == 1) ? 'odd' : 'even');
+
     
-    while (day.year() == year) {
+    while (day.month() == month.month()) {
         days.push(<Day key={day.dayOfYear()} day={ day.unix() } />);
+        if (day.date() < 7 && day.weekday() == 5) {
+            
+            days.push (
+                <div className="monthName">
+                    { month.format('MMMM') }
+                </div>
+            )
+        }
         day.add(1,'d');
     };
-
     
+    return (
+        <div className={ classes.join(' ')}>
+            
+            { days }
+                
+        </div>        
+    )
+})
+    
+const Calendar = ({ date }) => {
+    let year = date.year();
+    let month = date.startOf('year');
+    let months = [];
+    
+    while (month.year() == year) {
+        months.push(<Month key={month.month()} month={ month.unix() } />);
+        month.add(1,'M');
+    };
+
     return (
         <div className="cal">
         <div className="monthTitle">
             { year }
         </div>
         <DayTitles />
-        
-        <div className="daysContainer">
-            { days }
-        </div>
+
+        { months }
         
         </div>
     );
