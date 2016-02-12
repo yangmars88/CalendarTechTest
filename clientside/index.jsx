@@ -27,7 +27,9 @@ let userReducer = function (state = {}, action) {
 let calReducer = function (state = {}, action) {
     switch (action.type) {
         case 'DATE':
-            return { date: action.date }
+            return { date: action.date, ...state }
+        case 'SELECTMONTH':
+            return { ...state, month: action.month}
         default:
             return { date: new Moment() }
     }
@@ -81,6 +83,10 @@ const addEvent = ( event: ?Event ): ActionResult => {
     return { type: 'ADD', item: event }
 };
 
+const selectMonth = ( month: Number ): ActionResult => {
+    return { type: 'SELECTMONTH', month: month }
+}
+    
 /*  VIEWS  */
     
 const DayTitles = () => (
@@ -93,7 +99,7 @@ const DayTitles = () => (
     </div>
 );
 
-const Day = connect()(({ day }) => {
+const Day = connect()(({ day, onMouseOver }) => {
 //    day = new Moment.unix(day);
         
     let classes = [ 'day' ];
@@ -113,24 +119,29 @@ const Day = connect()(({ day }) => {
     if (today.isSame(day)) { classes.push('today') }
 
     return (
-        <div className={classes.join(' ')}>
+        <div className={classes.join(' ')} onMouseOver={ onMouseOver } >
             <div className="dayContent" >
                 { day.date() }
             </div>
         </div>)
 });
 
-const Month = connect()(({ month }) => {
-    month = Moment.unix(month);
+const Month = connect(
+    ((state) => { return { selectedMonth: state.cal.month } })    
+)(({ month, onMouseOver, selectedMonth }) => {
     let days = [];
     let day = month.clone();
 
     let classes = [ "month" ]
-    classes.push((month.month() % 2 == 1) ? 'odd' : 'even');
+//    classes.push((month.month() % 2 == 1) ? 'odd' : 'even');
+
+    if (selectedMonth == month.month()) {
+        classes.push('odd')
+    }
 
     
     while (day.month() == month.month()) {
-        days.push(<Day key={day.dayOfYear()} day={ day } />);
+        days.push(<Day key={day.dayOfYear()} day={ day } onMouseOver={ e => { store.dispatch(selectMonth(day.month())); }  } />);
         if (day.date() < 8 && day.weekday() == 5) {
             days.push (
                 <div key={ month.format('mm')} className="monthName">
@@ -158,8 +169,8 @@ connect(
     let months = [];
     
     while (month.year() == year) {
-        months.push(<Month key={month.month()} month={ month.unix() } />);
-        month.add(1,'M');
+        months.push(<Month key={month.month()} month={ month } />);
+        month = month.clone().add(1,'M');
     };
 
     return (

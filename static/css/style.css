@@ -70,12 +70,13 @@ body {
   padding: 0.25em;
   color: white;
   background-color: #333333;
+  margin-bottom: 0.5em;
 }
 .dayTitle.Sun {
-  border-top-left-radius: 1vmin;
+  border-top-left-radius: 0vmin;
 }
 .dayTitle.Sat {
-  border-top-right-radius: 1vmin;
+  border-top-right-radius: 0vmin;
 }
 .calContainer {
   border-top: 1px solid #cdcdcd;
