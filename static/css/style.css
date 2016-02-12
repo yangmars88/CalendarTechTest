@@ -151,8 +151,11 @@ body {
 .month {
   position: relative;
 }
-.month.odd .day {
-  background: rgba(0, 0, 0, 0.03);
+.month.selected .day {
+  background: transparent;
+}
+.month.deselected .day {
+  background: rgba(0, 0, 0, 0.05);
 }
 /*
 .monthName.odd {

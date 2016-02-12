@@ -145,9 +145,15 @@ body {
     position: relative;
 }
 
-.month.odd {
+.month.selected {
     .day {
-        background: rgba(0,0,0, 0.03);
+        background: transparent;
+    }
+}
+
+.month.deselected {
+    .day {
+        background: rgba(0,0,0, 0.05);
     }
 }
 

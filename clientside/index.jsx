@@ -27,7 +27,7 @@ let userReducer = function (state = {}, action) {
 let calReducer = function (state = {}, action) {
     switch (action.type) {
         case 'DATE':
-            return { date: action.date, ...state }
+            return {  ...state, date: action.date }
         case 'SELECTMONTH':
             return { ...state, month: action.month}
         default:
@@ -59,6 +59,7 @@ const store = createStore(
     applyMiddleware(thunk)
 );
 
+const dispatch = store.dispatch
 
 // ACTIONS
 
@@ -83,8 +84,8 @@ const addEvent = ( event: ?Event ): ActionResult => {
     return { type: 'ADD', item: event }
 };
 
-const selectMonth = ( month: Number ): ActionResult => {
-    return { type: 'SELECTMONTH', month: month }
+const selectMonth = ( month: number ): ActionResult => {
+    return { type: 'SELECTMONTH', month: (month) }
 }
     
 /*  VIEWS  */
@@ -128,29 +129,25 @@ const Day = connect()(({ day, onMouseOver }) => {
 
 const Month = connect(
     ((state) => { return { selectedMonth: state.cal.month } })    
-)(({ month, onMouseOver, selectedMonth }) => {
+)(({ month, selectedMonth }) => {
     let days = [];
-    let day = month.clone();
-
     let classes = [ "month" ]
-//    classes.push((month.month() % 2 == 1) ? 'odd' : 'even');
+    classes.push((selectedMonth == month.month()) ? "selected" : "deselected")
 
-    if (selectedMonth == month.month()) {
-        classes.push('odd')
-    }
+    let iterateDays = (month, day) => {
+        if (day.month() != month) { return }
 
-    
-    while (day.month() == month.month()) {
-        days.push(<Day key={day.dayOfYear()} day={ day } onMouseOver={ e => { store.dispatch(selectMonth(day.month())); }  } />);
+        days.push(<Day key={day.dayOfYear()} day={ day } onMouseOver={ e => { dispatch(selectMonth(day.month())); }  } />);
+        
         if (day.date() < 8 && day.weekday() == 5) {
             days.push (
-                <div key={ month.format('mm')} className="monthName">
-                    { month.format('MMMM') }
-                </div>
-            )
+                <div key={ day.format('mm')} className="monthName">
+                    { day.format('MMMM') }
+                </div>)
         }
-        day = day.clone().add(1,'d');
-    };
+        iterateDays(month, day.clone().add(1,'d'))};
+    
+    iterateDays(month.month(), month);
     
     return (
         <div className={ classes.join(' ')}>
@@ -190,10 +187,11 @@ store.dispatch(addEvent({ title: "event2", start: 12, end: 22 }));
 
 console.log('store_0 state after initialization:', store.getState());
 
+/*
 store.subscribe(() => {
     console.log('store has been updated. Latest store state:', store.getState());
 });
-
+*/
 
 const App = () => (
     <div>
