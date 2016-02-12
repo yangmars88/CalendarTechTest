@@ -67,21 +67,31 @@ body {
 }
 .dayTitle {
   width: 14.28%;
-  font-size: 1.5em;
+  font-size: 1em;
   float: left;
   text-align: center;
   padding: 0.25em;
 }
+.dayTitlesSpacer {
+  height: 2.5em;
+  width: 100vmin;
+}
 .dayTitles {
+  transition: all 0.5s ease;
+  position: absolute;
+  width: 100vmin;
   color: white;
   background-color: #4d4d4d;
   border: 1px solid #000000;
+  font-size: 1.25em;
   overflow: auto;
   margin: 0;
   padding: 0;
   margin-bottom: 0.5em;
+  z-index: 10;
 }
-.stick {
+.sticky {
+  width: 100vmin;
   position: fixed;
   top: 0;
 }

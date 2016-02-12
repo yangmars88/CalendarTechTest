@@ -8,6 +8,7 @@ import thunk from 'redux-thunk';
 import React from 'react'
 import { render } from 'react-dom'
 import { Provider, connect } from 'react-redux'
+import ReactDOM from 'react-dom';
 
 import Moment from 'moment';
 //import 'bluebird';
@@ -85,27 +86,54 @@ const addEvent = ( event: ?Event ): ActionResult => {
 const selectMonth = ( month: number ): ActionResult => {
     return { type: 'SELECTMONTH', month: (month) }
 }
-    
+
 /*  VIEWS  */
-    
+
 class DayTitles extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state =  { style: "notsticky" }
+    }
+
     render() {
-        return (
-            <div>
-                { Moment.weekdaysShort().map(n => (
-                      <div key={n} className={[n, 'dayTitle'].join(' ')}>
-                          {n}
-                      </div>
-                  ))}
-            </div>
-        )
+        console.log("titles render!",this.state)
+            return (
+                <div>
+                <div className={ ["dayTitles", this.state.style].join(" ")}>
+                    { Moment.weekdaysShort().map(n => (
+                          <div key={n} className={[n, 'dayTitle'].join(' ')}>
+                              {n}
+                          </div>
+                      ))}
+                </div>
+                <div className="dayTitlesSpacer" />
+                </div>
+            )
     }
 
     componentDidMount() {
-        console.log("DID MOUNT!")
+        const events =  ['scroll', 'resize', 'touchmove', 'touchend']
+        
+        events.forEach( type => {
+            window.addEventListener(type, this.handleEvent.bind(this));
+        }, this);
+
+        this.domNode = ReactDOM.findDOMNode(this);
+        this.origin = this.domNode.getBoundingClientRect().top + this.pageOffset();
+        this.hasUnhandledEvent = true;
     }
 
+    pageOffset() {        
+        return (window.pageYOffset || document.documentElement.scrollTop);
+    }
     
+    handleEvent(event) {
+        if (this.pageOffset() > this.origin) {
+            this.setState({ style: 'sticky' })
+        } else {
+            this.setState({ style: 'notsticky' })
+        }
+    }
 }
 
 const Day = connect()(({ day, onMouseOver }) => {
