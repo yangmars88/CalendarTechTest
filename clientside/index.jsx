@@ -60,10 +60,10 @@ const store = createStore(
 
 // ACTIONS
 
-
 type Action = { type: string };
 type DelayedAction = ((dispatch: Function) => void);
 class noAction {};
+
 type ActionResult =  DelayedAction | Action | Class<noAction>
 
 const login = ( user: boolean | Object ): ActionResult => {
@@ -94,7 +94,7 @@ const DayTitles = () => (
 );
 
 const Day = connect()(({ day }) => {
-    day = new Moment.unix(day);
+//    day = new Moment.unix(day);
         
     let classes = [ 'day' ];
     let today = new Moment().startOf('day');
@@ -130,7 +130,7 @@ const Month = connect()(({ month }) => {
 
     
     while (day.month() == month.month()) {
-        days.push(<Day key={day.dayOfYear()} day={ day.unix() } />);
+        days.push(<Day key={day.dayOfYear()} day={ day } />);
         if (day.date() < 8 && day.weekday() == 5) {
             days.push (
                 <div key={ month.format('mm')} className="monthName">
@@ -138,7 +138,7 @@ const Month = connect()(({ month }) => {
                 </div>
             )
         }
-        day.add(1,'d');
+        day = day.clone().add(1,'d');
     };
     
     return (
@@ -182,17 +182,6 @@ console.log('store_0 state after initialization:', store.getState());
 store.subscribe(() => {
     console.log('store has been updated. Latest store state:', store.getState());
 });
-
-
-const mapStateToProps = (state) => {
-    return {
-        date: state.cal.date
-    }
-};
-
-const mapDispatchToProps = (dispatch) => {
-    return {}
-};
 
 
 const App = () => (
