@@ -57,7 +57,7 @@ body {
   width: 100vmin;
   height: 80vmin;
 }
-.monthTitle {
+.calTitle {
   font-size: 3em;
   text-align: center;
   margin-bottom: 1em;
@@ -67,7 +67,15 @@ body {
   font-size: 1.5em;
   float: left;
   text-align: center;
-  margin-bottom: 0.5em;
+  padding: 0.25em;
+  color: white;
+  background-color: #333333;
+}
+.dayTitle.Sun {
+  border-top-left-radius: 1vmin;
+}
+.dayTitle.Sat {
+  border-top-right-radius: 1vmin;
 }
 .calContainer {
   border-top: 1px solid #cdcdcd;
@@ -78,7 +86,6 @@ body {
 }
 .day {
   width: 14.28%;
-  transition: transform 0.15s ease;
   font-size: 1em;
   position: relative;
   top: 0;
@@ -98,11 +105,20 @@ body {
   position: absolute;
   z-index: 2;
 }
-.day.btop {
-  border-top: 1px solid black;
+.day.mBorderTop {
+  border-top: 1px solid #000000;
 }
-.day.bleft {
-  border-left: 1px solid black;
+.day.mBorderLeft {
+  border-left: 1px solid #000000;
+}
+.day.last.right {
+  border-right: 1px solid #000000;
+}
+.day.last.left {
+  border-left: 1px solid #000000;
+}
+.day.last.top {
+  border-top: 1px solid #000000;
 }
 .day.today {
   border: 1px solid #6189b2 !important;
@@ -111,12 +127,9 @@ body {
 .day:hover {
   border: 1px solid #61b2a7;
   background: rgba(97, 178, 167, 0.45) !important;
-  box-shadow: 0 0.5em 1.5em rgba(1, 1, 1, 0.15);
-  transform: translate3d(0px, -1em, 0px);
+  box-shadow: 0 0.5em 1.5em rgba(1, 1, 1, 0.25);
+  transform: translate3d(0px, -0.3em, 0px);
   z-index: 3;
-}
-.day:hover .dayContent {
-  font-size: 2em;
 }
 .monthName {
   pointer-events: none;

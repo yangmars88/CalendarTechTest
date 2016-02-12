@@ -86,7 +86,7 @@ const addEvent = ( event: ?Event ): ActionResult => {
 const DayTitles = () => (
     <div>
         { Moment.weekdaysShort().map(n => (
-              <div key={n} className="dayTitle">
+              <div key={n} className={[n, 'dayTitle'].join(' ')}>
                   {n}
               </div>
           ))}
@@ -94,17 +94,22 @@ const DayTitles = () => (
 );
 
 const Day = connect()(({ day }) => {
-    day = new Moment.unix(day)
-            
+    day = new Moment.unix(day);
+        
     let classes = [ 'day' ];
     let today = new Moment().startOf('day');
     
-    
+
     if (day.month() > 0 && day.date() < 8) {
-        classes.push('btop');
-        if ((day.date() == 1) && (day.weekday() != 5)) { classes.push('bleft') }
+        classes.push('mBorderTop');
+        if ((day.date() == 1) && (day.weekday() != 5)) { classes.push('mBorderLeft') }
     }
+
+    if (day.month() == 0 && day.date() < 8) { classes = [ ...classes, 'last', 'top' ] }
     
+    if (day.weekday() == 4) { classes = [ ...classes, 'last', 'right' ] }
+    if (day.weekday() == 5) { classes = [ ...classes, 'last', 'left' ] }
+
     if (today.isSame(day)) { classes.push('today') }
 
     return (
@@ -127,9 +132,8 @@ const Month = connect()(({ month }) => {
     while (day.month() == month.month()) {
         days.push(<Day key={day.dayOfYear()} day={ day.unix() } />);
         if (day.date() < 8 && day.weekday() == 5) {
-            
             days.push (
-                <div className="monthName">
+                <div key={ month.format('mm')} className="monthName">
                     { month.format('MMMM') }
                 </div>
             )
@@ -139,14 +143,16 @@ const Month = connect()(({ month }) => {
     
     return (
         <div className={ classes.join(' ')}>
-            
             { days }
-                
         </div>        
     )
-})
+});
     
-const Calendar = ({ date }) => {
+const Calendar =
+connect(
+    ((state) => { return { date: state.cal.date}}),
+    (() => { return {} })
+)(({ date }) => {
     let year = date.year();
     let month = date.startOf('year');
     let months = [];
@@ -158,17 +164,14 @@ const Calendar = ({ date }) => {
 
     return (
         <div className="cal">
-        <div className="monthTitle">
-            { year }
-        </div>
-        <DayTitles />
-        <div className="calContainer">
+            <div className="calTitle">
+                { year }
+            </div>
+            <DayTitles />
             { months }
         </div>
-        
-        </div>
     );
-};
+});
         
 
 store.dispatch(addEvent({ title: "event1", start: 2, end: 5 }));
@@ -191,14 +194,10 @@ const mapDispatchToProps = (dispatch) => {
     return {}
 };
 
-const WrappedCal = connect(
-    ((state) => { return { date: state.cal.date}}),
-    (() => { return {} })
-)(Calendar);
 
 const App = () => (
     <div>
-        <WrappedCal />
+        <Calendar />
     </div>
 );
 
