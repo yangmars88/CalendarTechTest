@@ -47,6 +47,7 @@
   },
   "babel": {
     "plugins": [
+      "syntax-decorators",
       "transform-class-properties",
       "transform-object-rest-spread",
       "transform-flow-strip-types",

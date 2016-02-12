@@ -7,6 +7,9 @@
 .animMegaFast {
   transition: all 0.15s ease;
 }
+.textShadow {
+  text-shadow: 0.2vmin 0.2vmin 0 black;
+}
 .col-1 {
   width: 100%;
 }
@@ -68,9 +71,19 @@ body {
   float: left;
   text-align: center;
   padding: 0.25em;
+}
+.dayTitles {
   color: white;
-  background-color: #333333;
+  background-color: #4d4d4d;
+  border: 1px solid #000000;
+  overflow: auto;
+  margin: 0;
+  padding: 0;
   margin-bottom: 0.5em;
+}
+.stick {
+  position: fixed;
+  top: 0;
 }
 .dayTitle.Sun {
   border-top-left-radius: 0vmin;
@@ -134,19 +147,19 @@ body {
 }
 .monthName {
   pointer-events: none;
-  opacity: 0.1;
+  opacity: 0.15;
   font-weight: bold;
   position: relative;
   float: left;
   left: -1.5em;
   z-index: 0;
   font-size: 7.5em;
-  border: 1px solid red;
   height: 0;
   width: 0;
   border: 0px;
   padding: 0;
   margin: 0;
+  color: gray;
 }
 .month {
   position: relative;

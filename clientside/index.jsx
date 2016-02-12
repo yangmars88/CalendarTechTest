@@ -12,9 +12,7 @@ import { Provider, connect } from 'react-redux'
 import Moment from 'moment';
 //import 'bluebird';
 
-
 // STORE
-
 let userReducer = function (state = {}, action) {
     switch (action.type) {
         case 'LOGIN':
@@ -90,15 +88,25 @@ const selectMonth = ( month: number ): ActionResult => {
     
 /*  VIEWS  */
     
-const DayTitles = () => (
-    <div>
-        { Moment.weekdaysShort().map(n => (
-              <div key={n} className={[n, 'dayTitle'].join(' ')}>
-                  {n}
-              </div>
-          ))}
-    </div>
-);
+class DayTitles extends React.Component {
+    render() {
+        return (
+            <div>
+                { Moment.weekdaysShort().map(n => (
+                      <div key={n} className={[n, 'dayTitle'].join(' ')}>
+                          {n}
+                      </div>
+                  ))}
+            </div>
+        )
+    }
+
+    componentDidMount() {
+        console.log("DID MOUNT!")
+    }
+
+    
+}
 
 const Day = connect()(({ day, onMouseOver }) => {
 //    day = new Moment.unix(day);
@@ -127,9 +135,42 @@ const Day = connect()(({ day, onMouseOver }) => {
         </div>)
 });
 
-const Month = connect(
-    ((state) => { return { selectedMonth: state.cal.month } })    
-)(({ month, selectedMonth }) => {
+// @connect( state => { return { selectedMonth: state.cal.month } })
+class MonthC extends React.Component {
+    render() {
+        let { month, selectedMonth } = this.props
+        let days = [];
+        let classes = [ "month" ]
+        
+        classes.push((selectedMonth == month.month()) ? "selected" : "deselected");
+
+            let iterateDays = (month, day) => {
+                if (day.month() != month) { return }
+
+                days.push(<Day key={day.dayOfYear()} day={ day } onMouseOver={ e => { dispatch(selectMonth(day.month())); }  } />);
+                
+                if (day.date() < 8 && day.weekday() == 5) {
+                    days.push (
+                        <div key={ day.format('mm')} className="monthName">
+                            { day.format('MMMM') }
+                        </div>)
+                }
+                iterateDays(month, day.clone().add(1,'d'))};
+        
+        iterateDays(month.month(), month);
+        
+        return (
+            <div className={ classes.join(' ')}>
+                { days }
+            </div>)
+    }   
+}
+
+const Month = connect( state => { return { selectedMonth: state.cal.month } })(MonthC)
+
+
+
+const MonthOld = connect()(({ month, selectedMonth }) => {
     let days = [];
     let classes = [ "month" ]
     classes.push((selectedMonth == month.month()) ? "selected" : "deselected")
