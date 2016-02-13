@@ -57,8 +57,8 @@ body {
   text-align: left;
   padding: 0;
   display: inline-block;
+  overflow: autp;
   width: 100vmin;
-  height: 80vmin;
 }
 .calTitle {
   font-size: 3em;
@@ -109,6 +109,7 @@ body {
   overflow-y: scroll;
 }
 .day {
+  transition: all 0.5s ease;
   width: 14.28%;
   font-size: 1em;
   position: relative;
@@ -130,6 +131,7 @@ body {
   z-index: 2;
 }
 .daySpacer {
+  transition: all 0.5s ease;
   width: 14.28%;
   font-size: 1em;
   position: relative;
@@ -145,6 +147,7 @@ body {
   border-right: 1px solid white;
   overflow: hidden;
   border: 0px;
+  pointer-events: none;
 }
 .daySpacer .dayContent {
   transition: all 0.15s ease;
@@ -178,21 +181,21 @@ body {
   z-index: 3;
 }
 .monthName {
+  transition: all 0.5s ease;
+  position: relative;
+  top: 1.25em;
+  left: 0.1em;
   pointer-events: none;
   opacity: 0.15;
   font-weight: bold;
-  position: relative;
-  float: left;
   z-index: 0;
   font-size: 7.5em;
   height: 0;
   width: 0;
-  border: 0px;
-  padding: 0;
-  margin: 0;
   color: gray;
 }
 .month {
+  transition: all 0.5s ease;
   position: relative;
   overflow: auto;
 }
@@ -201,6 +204,9 @@ body {
 }
 .month.selected .day {
   background: transparent;
+}
+.month.selected .monthName {
+  opacity: 0.15;
 }
 .month.deselected .day {
   background: rgba(0, 0, 0, 0.05);

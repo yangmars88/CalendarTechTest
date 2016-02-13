@@ -33,8 +33,9 @@ body {
     text-align: left;
     padding: 0;
     display: inline-block;
+    overflow: autp;
     width: 100vmin;
-    height: 80vmin;
+//    height: 80vmin;
 }
 
 
@@ -97,6 +98,7 @@ body {
 }
 
 .day {
+    .anim;
     .col-1-7;
 //    transition: transform 0.15s ease;
     font-size: 1em;
@@ -122,6 +124,8 @@ body {
 .daySpacer {
     .day;
     border: 0px;
+    pointer-events: none;
+
 }
 
 
@@ -152,24 +156,22 @@ body {
 
 
 .monthName {
+    .anim;
+    position: relative;
+    top: 1.25em;
+    left: 0.1em;
     pointer-events: none;
     opacity: 0.15;
     font-weight: bold;
-    position: relative;
-    float: left;
     z-index: 0;
     font-size: 7.5em;
     height: 0;
     width: 0;
-    border: 0px;
-    padding: 0;
-    margin: 0;
     color: gray;
-    .content {
-    }
 }
 
 .month {
+    .anim;
     position: relative;
     overflow: auto;
 }
@@ -182,6 +184,9 @@ body {
 .month.selected {
     .day {
         background: transparent;
+    }
+    .monthName {
+        opacity: 0.15;
     }
 }
 

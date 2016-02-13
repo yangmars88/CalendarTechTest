@@ -32,7 +32,7 @@ let calReducer = function (state = {}, action) {
         case 'SELECTMONTH':
             return { ...state, month: action.month}
         default:
-            return { date: new Moment() }
+            return { date: new Moment(), month: 0 }
     }
 }
 
@@ -156,9 +156,7 @@ const Day = connect()(({ day, onMouseOver }) => {
     return (
         <div className={classes.join(' ')} onMouseOver={ onMouseOver } >
             <div className="dayContent" >
-                { day.date() } - 
-                { day.weekday() } -
-                { day.format('ddd') }
+                { day.date() }
             </div>
         </div>)
 });
@@ -173,6 +171,7 @@ const DaySpacer = () => {
 class Month extends React.Component {
     render() {
         let { month, selectedMonth }  = this.props;
+        
         let days = [];
         let classes = [ ]
 
@@ -199,6 +198,7 @@ class Month extends React.Component {
         return (
             <div className={ [ 'month', ...classes ].join(' ') }>
                 <div className="monthName">
+                    { month.format('MMMM') }
                 </div>
 
                 <div className="days">
@@ -206,50 +206,59 @@ class Month extends React.Component {
                 </div>
             </div>
         )
-    }}
+    }
+}
 
 @connect((state) => { return { date: state.cal.date}})
-class Calendar extends React.Component {
-    render(...args) {
-        let year = this.props.date.year();
+class Months extends React.Component {
+    render() {
+        console.log(this.props)
         let month = this.props.date.startOf('year');
         let months = [];
+        let year = this.props.date.year();
         
         while (month.year() == year) {
             months.push(<Month key={month.month()} month={ month } />);
             month = month.clone().add(1,'M');
         };
+
+        return (
+            <div className="months">
+                { months }
+            </div>)
+    }
+
+    componentDidMount() {
+        const events =  ['scroll', 'resize', 'touchmove', 'touchend']
+        events.forEach( type => {
+            window.addEventListener(type, this.handleEvent.bind(this));
+        }, this);
         
+        this.node = ReactDOM.findDOMNode(this)
+    }
+
+    pageOffset() { return (window.pageYOffset || document.documentElement.scrollTop); }
+    
+    handleEvent(event) {
+        const month = (this.pageOffset() - this.node.clientTop) / (this.node.clientHeight / 12);
+        dispatch(selectMonth(Math.round(month)))
+    }
+}
+
+@connect((state) => { return { date: state.cal.date}})
+class Calendar extends React.Component {
+    render() {
+        let year = this.props.date.year();
+
         return (
             <div className="cal">
                 <div className="calTitle">
                     { year }
                 </div>
                 <DayTitles />
-                { months }
+                <Months />
             </div>
-        );
-    }
-
-    componentDidMounty() {
-        const events =  ['scroll', 'resize', 'touchmove', 'touchend']
-        
-        events.forEach( type => {
-            window.addEventListener(type, this.handleEvent.bind(this));
-        }, this);
-
-        this.domNode = ReactDOM.findDOMNode(this);
-        this.origin = this.domNode.getBoundingClientRect().top + this.pageOffset();
-        this.hasUnhandledEvent = true;
-    }
-    
-    handleEvent(event) {
-        if (this.pageOffset() > this.origin) {
-            this.setState({ style: 'sticky' })
-        } else {
-            this.setState({ style: 'notsticky' })
-        }
-    }
+        )}
 }
 
 store.dispatch(addEvent({ title: "event1", start: 2, end: 5 }));
