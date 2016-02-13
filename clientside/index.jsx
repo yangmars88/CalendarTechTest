@@ -9,8 +9,7 @@ import React from 'react'
 import { render } from 'react-dom'
 import { Provider, connect } from 'react-redux'
 import ReactDOM from 'react-dom';
-
-import 'moment/locale/hr'
+//import 'moment/locale/hr'
 
 import Moment from 'moment';
 //import 'bluebird';
@@ -144,7 +143,10 @@ const Day = connect()(({ day, onMouseOver }) => {
     let classes = [ 'day' ];
     let today = new Moment().startOf('day');    
 
-    if (day.month() > 0 && day.date() <= 7) {
+    if (day.weekday() == 0) { classes = ['last', 'left', ...classes] }
+    if (day.weekday() == 6) { classes = ['last', 'right', ...classes] }
+    
+    if (day.date() <= 7) {
         classes.push('mBorderTop');
         if ((day.date() == 1) && (day.weekday() != 0)) { classes.push('mBorderLeft') }
     }
@@ -167,44 +169,44 @@ const DaySpacer = () => {
     
 }
 
-
-const Month = connect( state => { return { selectedMonth: state.cal.month } })(
-    ({ month, selectedMonth } ) =>{
+@connect( state => { return { selectedMonth: state.cal.month } })
+class Month extends React.Component {
+    render() {
+        let { month, selectedMonth }  = this.props;
         let days = [];
         let classes = [ ]
-        
+
         classes.push((selectedMonth == month.month()) ? "selected" : "deselected");
         classes.push((month.month() == 0 ) ? "noshift" : "shift");
 
-        
         let iteratePadding = (pad) => {
             if (!pad) { return }
             days.push(<DaySpacer key={"pad" + pad} />);
             iteratePadding(pad - 1)
         }
-        
-        iteratePadding(month.weekday() || 7)
-            
-        let iterateDays = (month, day) => {
-            if (day.month() != month) { return }
 
-            days.push(<Day key={day.dayOfYear()} day={ day } />);
-            
-            iterateDays(month, day.clone().add(1,'d'))};
-        
+        iteratePadding(month.weekday() || 7)
+
+            let iterateDays = (month, day) => {
+                if (day.month() != month) { return }
+
+                days.push(<Day key={day.dayOfYear()} day={ day } />);
+
+                iterateDays(month, day.clone().add(1,'d'))};
+
         iterateDays(month.month(), month);
-        
+
         return (
             <div className={ [ 'month', ...classes ].join(' ') }>
-            <div className="monthName">
-            </div>
+                <div className="monthName">
+                </div>
 
-            <div className="days">
-                { days }
-            </div>
+                <div className="days">
+                    { days }
+                </div>
             </div>
         )
-    });
+    }}
 
 @connect((state) => { return { date: state.cal.date}})
 class Calendar extends React.Component {
