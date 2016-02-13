@@ -129,6 +129,28 @@ body {
   position: absolute;
   z-index: 2;
 }
+.daySpacer {
+  width: 14.28%;
+  font-size: 1em;
+  position: relative;
+  top: 0;
+  cursor: pointer;
+  float: left;
+  padding-top: 1em;
+  padding-left: 1em;
+  padding-bottom: 10%;
+  border-left: 1px solid #cdcdcd;
+  border-top: 1px solid #cdcdcd;
+  border-bottom: 1px solid white;
+  border-right: 1px solid white;
+  overflow: hidden;
+  border: 0px;
+}
+.daySpacer .dayContent {
+  transition: all 0.15s ease;
+  position: absolute;
+  z-index: 2;
+}
 .day.mBorderTop {
   border-top: 1px solid #000000;
 }
@@ -161,7 +183,6 @@ body {
   font-weight: bold;
   position: relative;
   float: left;
-  left: -1.5em;
   z-index: 0;
   font-size: 7.5em;
   height: 0;
@@ -173,6 +194,10 @@ body {
 }
 .month {
   position: relative;
+  overflow: auto;
+}
+.month.shift {
+  margin-top: -11.4%;
 }
 .month.selected .day {
   background: transparent;

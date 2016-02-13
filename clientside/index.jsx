@@ -10,6 +10,8 @@ import { render } from 'react-dom'
 import { Provider, connect } from 'react-redux'
 import ReactDOM from 'react-dom';
 
+import 'moment/locale/hr'
+
 import Moment from 'moment';
 //import 'bluebird';
 
@@ -22,6 +24,7 @@ let userReducer = function (state = {}, action) {
             return state;
     }
 }
+
 
 let calReducer = function (state = {}, action) {
     switch (action.type) {
@@ -92,23 +95,22 @@ const selectMonth = ( month: number ): ActionResult => {
 class DayTitles extends React.Component {
     constructor(props) {
         super(props);
-        this.state =  { style: "notsticky" }
+        this.state =  { sticky: false }
     }
 
     render() {
-        console.log("titles render!",this.state)
-            return (
-                <div>
-                <div className={ ["dayTitles", this.state.style].join(" ")}>
-                    { Moment.weekdaysShort().map(n => (
-                          <div key={n} className={[n, 'dayTitle'].join(' ')}>
-                              {n}
-                          </div>
-                      ))}
+        return (
+            <div>
+            <div className={ ["dayTitles", (this.state.sticky ? 'sticky' : 'notsticky') ].join(' ')}>
+            { Moment.weekdays().map(name => (
+                <div key={name} className={[name, 'dayTitle'].join(' ')}>
+                    {name}
                 </div>
-                <div className="dayTitlesSpacer" />
-                </div>
-            )
+            ))}
+            </div>
+            <div className="dayTitlesSpacer" />
+            </div>
+        )
     }
 
     componentDidMount() {
@@ -128,10 +130,12 @@ class DayTitles extends React.Component {
     }
     
     handleEvent(event) {
-        if (this.pageOffset() > this.origin) {
-            this.setState({ style: 'sticky' })
-        } else {
-            this.setState({ style: 'notsticky' })
+        if (this.pageOffset() > this.origin && !this.state.sticky) {
+            this.setState({sticky: true});
+        }
+        
+        if ( this.pageOffset() < this.origin && this.state.sticky ) {
+            this.setState({ sticky: false });
         }
     }
 }
@@ -140,61 +144,75 @@ const Day = connect()(({ day, onMouseOver }) => {
     let classes = [ 'day' ];
     let today = new Moment().startOf('day');    
 
-    if (day.month() > 0 && day.date() < 8) {
+    if (day.month() > 0 && day.date() <= 7) {
         classes.push('mBorderTop');
-        if ((day.date() == 1) && (day.weekday() != 5)) { classes.push('mBorderLeft') }
+        if ((day.date() == 1) && (day.weekday() != 0)) { classes.push('mBorderLeft') }
     }
-
-    if (day.month() == 0 && day.date() < 8) { classes = [ ...classes, 'last', 'top' ] }
-    
-    if (day.weekday() == 4) { classes = [ ...classes, 'last', 'right' ] }
-    if (day.weekday() == 5) { classes = [ ...classes, 'last', 'left' ] }
 
     if (today.isSame(day)) { classes.push('today') }
 
     return (
         <div className={classes.join(' ')} onMouseOver={ onMouseOver } >
             <div className="dayContent" >
-                { day.date() }
+                { day.date() } - 
+                { day.weekday() } -
+                { day.format('ddd') }
             </div>
         </div>)
 });
 
+const DaySpacer = () => {
+
+    return ( <div className="daySpacer" /> )
+    
+}
+
+
 const Month = connect( state => { return { selectedMonth: state.cal.month } })(
     ({ month, selectedMonth } ) =>{
         let days = [];
-        let classes = [ "month" ]
+        let classes = [ ]
         
         classes.push((selectedMonth == month.month()) ? "selected" : "deselected");
+        classes.push((month.month() == 0 ) ? "noshift" : "shift");
 
-            let iterateDays = (month, day) => {
-                if (day.month() != month) { return }
+        
+        let iteratePadding = (pad) => {
+            if (!pad) { return }
+            days.push(<DaySpacer key={"pad" + pad} />);
+            iteratePadding(pad - 1)
+        }
+        
+        iteratePadding(month.weekday() || 7)
+            
+        let iterateDays = (month, day) => {
+            if (day.month() != month) { return }
 
-                days.push(<Day key={day.dayOfYear()} day={ day } />);
-                
-                if (day.date() < 8 && day.weekday() == 5) {
-                    days.push (
-                        <div key={ day.format('mm')} className="monthName">
-                            { day.format('MMMM') }
-                        </div>)
-                }
-                iterateDays(month, day.clone().add(1,'d'))};
+            days.push(<Day key={day.dayOfYear()} day={ day } />);
+            
+            iterateDays(month, day.clone().add(1,'d'))};
         
         iterateDays(month.month(), month);
         
         return (
-            <div className={ classes.join(' ')}>
+            <div className={ [ 'month', ...classes ].join(' ') }>
+            <div className="monthName">
+            </div>
+
+            <div className="days">
                 { days }
-            </div>)
-    })
+            </div>
+            </div>
+        )
+    });
 
 @connect((state) => { return { date: state.cal.date}})
 class Calendar extends React.Component {
-    render() {
+    render(...args) {
         let year = this.props.date.year();
         let month = this.props.date.startOf('year');
         let months = [];
-    
+        
         while (month.year() == year) {
             months.push(<Month key={month.month()} month={ month } />);
             month = month.clone().add(1,'M');
@@ -211,7 +229,7 @@ class Calendar extends React.Component {
         );
     }
 
-    componentDidMount() {
+    componentDidMounty() {
         const events =  ['scroll', 'resize', 'touchmove', 'touchend']
         
         events.forEach( type => {
@@ -235,13 +253,13 @@ class Calendar extends React.Component {
 store.dispatch(addEvent({ title: "event1", start: 2, end: 5 }));
 store.dispatch(addEvent({ title: "event2", start: 12, end: 22 }));
 
-console.log('store_0 state after initialization:', store.getState());
+console.log('store state after initialization:', store.getState());
 
 /*
-store.subscribe(() => {
-    console.log('store has been updated. Latest store state:', store.getState());
-});
-*/
+   store.subscribe(() => {
+   console.log('store has been updated. Latest store state:', store.getState());
+   });
+ */
 
 const App = () => (
     <div>

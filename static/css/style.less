@@ -119,6 +119,12 @@ body {
     }    
 }
 
+.daySpacer {
+    .day;
+    border: 0px;
+}
+
+
 .day.mBorderTop { border-top: 1px solid @monthBorderColor; }
 .day.mBorderLeft { border-left: 1px solid @monthBorderColor; }
 
@@ -151,7 +157,6 @@ body {
     font-weight: bold;
     position: relative;
     float: left;
-    left: -1.5em;
     z-index: 0;
     font-size: 7.5em;
     height: 0;
@@ -166,6 +171,12 @@ body {
 
 .month {
     position: relative;
+    overflow: auto;
+}
+
+
+.month.shift {
+    margin-top: -11.4%;
 }
 
 .month.selected {
