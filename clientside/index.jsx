@@ -210,7 +210,7 @@ class Calendar extends React.Component {
             </div>
         );
     }
-    
+
     componentDidMount() {
         const events =  ['scroll', 'resize', 'touchmove', 'touchend']
         
