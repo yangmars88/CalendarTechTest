@@ -137,11 +137,8 @@ class DayTitles extends React.Component {
 }
 
 const Day = connect()(({ day, onMouseOver }) => {
-//    day = new Moment.unix(day);
-        
     let classes = [ 'day' ];
-    let today = new Moment().startOf('day');
-    
+    let today = new Moment().startOf('day');    
 
     if (day.month() > 0 && day.date() < 8) {
         classes.push('mBorderTop');
@@ -163,10 +160,8 @@ const Day = connect()(({ day, onMouseOver }) => {
         </div>)
 });
 
-// @connect( state => { return { selectedMonth: state.cal.month } })
-class MonthC extends React.Component {
-    render() {
-        let { month, selectedMonth } = this.props
+const Month = connect( state => { return { selectedMonth: state.cal.month } })(
+    ({ month, selectedMonth } ) =>{
         let days = [];
         let classes = [ "month" ]
         
@@ -175,7 +170,7 @@ class MonthC extends React.Component {
             let iterateDays = (month, day) => {
                 if (day.month() != month) { return }
 
-                days.push(<Day key={day.dayOfYear()} day={ day } onMouseOver={ e => { dispatch(selectMonth(day.month())); }  } />);
+                days.push(<Day key={day.dayOfYear()} day={ day } />);
                 
                 if (day.date() < 8 && day.weekday() == 5) {
                     days.push (
@@ -191,65 +186,51 @@ class MonthC extends React.Component {
             <div className={ classes.join(' ')}>
                 { days }
             </div>)
-    }   
-}
+    })
 
-const Month = connect( state => { return { selectedMonth: state.cal.month } })(MonthC)
-
-
-
-const MonthOld = connect()(({ month, selectedMonth }) => {
-    let days = [];
-    let classes = [ "month" ]
-    classes.push((selectedMonth == month.month()) ? "selected" : "deselected")
-
-    let iterateDays = (month, day) => {
-        if (day.month() != month) { return }
-
-        days.push(<Day key={day.dayOfYear()} day={ day } onMouseOver={ e => { dispatch(selectMonth(day.month())); }  } />);
+@connect((state) => { return { date: state.cal.date}})
+class Calendar extends React.Component {
+    render() {
+        let year = this.props.date.year();
+        let month = this.props.date.startOf('year');
+        let months = [];
+    
+        while (month.year() == year) {
+            months.push(<Month key={month.month()} month={ month } />);
+            month = month.clone().add(1,'M');
+        };
         
-        if (day.date() < 8 && day.weekday() == 5) {
-            days.push (
-                <div key={ day.format('mm')} className="monthName">
-                    { day.format('MMMM') }
-                </div>)
-        }
-        iterateDays(month, day.clone().add(1,'d'))};
-    
-    iterateDays(month.month(), month);
-    
-    return (
-        <div className={ classes.join(' ')}>
-            { days }
-        </div>        
-    )
-});
-    
-const Calendar =
-connect(
-    ((state) => { return { date: state.cal.date}}),
-    (() => { return {} })
-)(({ date }) => {
-    let year = date.year();
-    let month = date.startOf('year');
-    let months = [];
-    
-    while (month.year() == year) {
-        months.push(<Month key={month.month()} month={ month } />);
-        month = month.clone().add(1,'M');
-    };
-
-    return (
-        <div className="cal">
-            <div className="calTitle">
-                { year }
+        return (
+            <div className="cal">
+                <div className="calTitle">
+                    { year }
+                </div>
+                <DayTitles />
+                { months }
             </div>
-            <DayTitles />
-            { months }
-        </div>
-    );
-});
+        );
+    }
+    
+    componentDidMount() {
+        const events =  ['scroll', 'resize', 'touchmove', 'touchend']
         
+        events.forEach( type => {
+            window.addEventListener(type, this.handleEvent.bind(this));
+        }, this);
+
+        this.domNode = ReactDOM.findDOMNode(this);
+        this.origin = this.domNode.getBoundingClientRect().top + this.pageOffset();
+        this.hasUnhandledEvent = true;
+    }
+    
+    handleEvent(event) {
+        if (this.pageOffset() > this.origin) {
+            this.setState({ style: 'sticky' })
+        } else {
+            this.setState({ style: 'notsticky' })
+        }
+    }
+}
 
 store.dispatch(addEvent({ title: "event1", start: 2, end: 5 }));
 store.dispatch(addEvent({ title: "event2", start: 12, end: 22 }));

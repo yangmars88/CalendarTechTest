@@ -33,6 +33,8 @@
     "babel-plugin-lodash": "^2.0.1",
     "babel-plugin-react-transform": "^2.0.0",
     "babel-plugin-transform-class-properties": "^6.5.0",
+    "babel-plugin-transform-decorators": "^6.5.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-plugin-transform-flow-strip-types": "^6.4.0",
     "babel-plugin-transform-object-rest-spread": "^6.5.0",
     "babel-polyfill": "^6.3.14",
@@ -47,6 +49,7 @@
   },
   "babel": {
     "plugins": [
+      "transform-decorators-legacy",
       "syntax-decorators",
       "transform-class-properties",
       "transform-object-rest-spread",
